@@ -144,7 +144,7 @@ if __name__ == '__main__':
 	# parts = [table['hair'], table['upper_lip'], table['lower_lip']]
 	parts = [table['hair']]
 
-	colors = [[ 67, 240, 67], [24, 224, 13], [24, 224, 13]]
+	colors = [[ 67,240,67], [24, 224, 13], [24, 224, 13]]
 
 	for part, color in zip(parts, colors):
 		image = hair(image, parsing, part, color)
