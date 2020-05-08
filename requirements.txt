@@ -8,5 +8,5 @@ uvicorn==0.7.1
 opencv-python==4.2.0.34
 Pillow-SIMD==7.0.0.post3
 scikit-image==0.17.0
-torch==1.5.0+cpu torchvision==0.6.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+
 
