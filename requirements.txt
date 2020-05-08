@@ -7,6 +7,6 @@ starlette==0.12.0
 uvicorn==0.7.1
 opencv-python==4.2.0.34
 Pillow-SIMD==7.0.0.post3
-scikit-image==0.17.0
+
 
 
