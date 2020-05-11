@@ -79,7 +79,7 @@ def sharpen(img):
 	return np.array(img_out, dtype=np.uint8)
 
 
-def hair(image, parsing, part=17, color=[ 67, 240, 67]):
+def hair(image, parsing, part=17, color=[ 57, 196, 2]):
 	b, g, r = color      #[10, 50, 250]       # [10, 250, 10]
 	tar_color = np.zeros_like(image)
 	tar_color[:, :, 0] = b
@@ -144,7 +144,7 @@ if __name__ == '__main__':
 	# parts = [table['hair'], table['upper_lip'], table['lower_lip']]
 	parts = [table['hair']]
 
-	colors = [[ 67,240,67], [24, 224, 13], [24, 224, 13]]
+	colors = [[ 57, 196, 2], [24, 224, 13], [24, 224, 13]]
 
 	for part, color in zip(parts, colors):
 		image = hair(image, parsing, part, color)
