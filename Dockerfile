@@ -31,6 +31,8 @@ COPY requirements.txt .
 RUN pip install --upgrade -r requirements.txt
 RUN pip install torch==1.5.0+cpu torchvision==0.6.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 RUN pip install scikit-image
+RUN pip uninstall pillow
+RUN pip install Pillow-SIMD
 
 COPY app app/
 

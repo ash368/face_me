@@ -10,8 +10,11 @@ from PIL.ExifTags import TAGS
 
 
 def parse_args():
+	green = [[ 53, 252, 3], [24, 224, 13], [24, 224, 13]]
+	red = [[11,54,212],[24, 224, 13], [24, 224, 13]]
 	parse = argparse.ArgumentParser()
 	parse.add_argument('--img-path', default='imgs/116.jpg')
+	parse.add_argument('--color',default=red)
 	return parse.parse_args()
 
 def exif_remover(img):
@@ -92,7 +95,7 @@ def hair(image, parsing, part=17, color=[ 57, 196, 2]):
 	if part == 12 or part == 13:
 		image_hsv[:, :, 0:2] = tar_hsv[:, :, 0:2]
 	else:
-		image_hsv[:, :, 0:1] = tar_hsv[:, :, 0:1]
+		image_hsv[:, :, 0:2] = tar_hsv[:, :, 0:2] #changed for black hair
 
 	changed = cv2.cvtColor(image_hsv, cv2.COLOR_HSV2BGR)
 
@@ -127,6 +130,7 @@ if __name__ == '__main__':
 	cp = 'cp/79999_iter.pth'
 
 
+
 	im = Image.open(image_path)
 	image_path = os.path.split(image_path)
 	image_path = os.path.join(image_path[0], 'new'+image_path[1])
@@ -144,7 +148,10 @@ if __name__ == '__main__':
 	# parts = [table['hair'], table['upper_lip'], table['lower_lip']]
 	parts = [table['hair']]
 
-	colors = [[ 57, 196, 2], [24, 224, 13], [24, 224, 13]]
+	green = [[ 53, 252, 3], [24, 224, 13], [24, 224, 13]]
+	red = [[11,54,212],[24, 224, 13], [24, 224, 13]]
+
+	colors = args.color
 
 	for part, color in zip(parts, colors):
 		image = hair(image, parsing, part, color)

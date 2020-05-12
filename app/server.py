@@ -146,7 +146,7 @@ async def analyze(request):
 		if part == 12 or part == 13:
 			image_hsv[:, :, 0:2] = tar_hsv[:, :, 0:2]
 		else:
-			image_hsv[:, :, 0:1] = tar_hsv[:, :, 0:1]
+			image_hsv[:, :, 0:2] = tar_hsv[:, :, 0:2]
 
 		changed = cv2.cvtColor(image_hsv, cv2.COLOR_HSV2BGR)
 
@@ -188,7 +188,7 @@ async def analyze(request):
 		# parts = [table['hair'], table['upper_lip'], table['lower_lip']]
 		parts = [table['hair']]
 
-		colors = [[ 255,0,0], [24, 224, 13], [24, 224, 13]]
+		colors = [[ 53, 252, 3], [24, 224, 13], [24, 224, 13]]
 
 		for part, color in zip(parts, colors):
 			image = hair(image, parsing, part, color)
