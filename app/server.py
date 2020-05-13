@@ -2,17 +2,21 @@ import os
 import sys
 import cv2
 import math
+import torch
 import typing
 import aiohttp
 import asyncio
 import uvicorn
 import argparse
 import numpy as np
+import torch.nn as nn
+from model import BiSeNet
 from io import BytesIO
 from test import evaluate
 from pathlib import Path
 from PIL.ExifTags import TAGS
 from skimage.filters import gaussian
+import torchvision.transforms as transforms
 from PIL import Image, ImageFile, ImageFilter, ImageEnhance
 from starlette.background import BackgroundTask
 from starlette.applications import Starlette
@@ -153,51 +157,46 @@ async def analyze(request):
 		if part == 17:
 			changed = sharpen(changed)
 
-	
-		# image= cv2.resize(image, (512, 512))
-		# changed = cv2.resize(changed,(512,512))
 		changed[parsing != part] = image[parsing != part]
-		# print (changed)
-		# print (image)
+
 		return changed
+
+	def parser(image_path='./imgs/116.jpg', cp='cp/79999_iter.pth'):
+		n_classes = 19
+		net = BiSeNet(n_classes=n_classes)
+		device = torch.device("cpu")
+		net.to(device)
+		net.load_state_dict(torch.load(cp,map_location='cpu'))
+		net.eval()
+
+		to_tensor = transforms.Compose([transforms.ToTensor(),
+			transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),])
+
+		with torch.no_grad():
+			# img = Image.open(image_path)
+			img = to_tensor(im)
+			img = torch.unsqueeze(img, 0)
+			out = net(img)[0]
+			parsing = out.squeeze(0).numpy().argmax(0)
+			return parsing
 	
 
 	if __name__ == '__main__':
-		# 1  face
-		# 11 teeth
-		# 12 upper lip
-		# 13 lower lip
-		# 17 hair
 
-		table = {
-			'hair': 17,
-			'upper_lip': 12,
-			'lower_lip': 13
-		}
-
-		image_path = 'app/imgs/new_makeup.png'
 		cp = 'app/cp/79999_iter.pth'
+		
+		#change img size and orientation
 		im = exif_remover(im)
-		im = resizer(im, 512)
-		im.save(image_path)
+		im = resizer(im, 400)
 
-		#read the resized image
-		image = cv2.imread(image_path)
+		#read image for operations
+		image = cv2.cvtColor(np.array(im), cv2.COLOR_RGB2BGR) 
 		ori = image.copy()
-		parsing = evaluate(image_path, cp)
-		# parts = [table['hair'], table['upper_lip'], table['lower_lip']]
-		parts = [table['hair']]
-
-		colors = [[ 53, 252, 3], [24, 224, 13], [24, 224, 13]]
-
-		for part, color in zip(parts, colors):
-			image = hair(image, parsing, part, color)
-			cv2.imwrite('app/new_makeup.png',image)   
-			# if os.path.exists(image_path):
-			# 	os.remove(image_path)
-			# else:
-			# 	print("The file does not exist")
-			# print ("done")
+		parsing = parser(im, cp)
+		part = 17
+		color = [0,107, 107]
+		image = hair(image, parsing, part, color)
+		cv2.imwrite('app/new_makeup.png',image)   
 	return FileResponse('app/new_makeup.png',media_type='image/png')
 
 
